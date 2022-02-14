@@ -1,0 +1,30 @@
+{
+  "name": "websockets-blog",
+  "version": "0.1.0",
+  "bin": {
+    "websockets-blog": "bin/websockets-blog.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "10.17.27",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
+    "aws-cdk": "^2.12.0",
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "ts-node": "^9.0.0",
+    "typescript": "~3.9.7"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigatewayv2-alpha": "^2.12.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.12.0-alpha.0",
+    "aws-cdk-lib": "^2.12.0",
+    "constructs": "^10.0.0",
+    "source-map-support": "^0.5.16"
+  }
+}
