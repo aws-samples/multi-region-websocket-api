@@ -36,7 +36,7 @@ export class SimpleLambda extends Construct {
     this.fn = new NodejsFunction(this, id, {
       entry: `../src/lambda/${props.entryFilename}`,
       handler: props.handler ?? 'handler',
-      runtime: props.runtime ?? Runtime.NODEJS_14_X,
+      runtime: props.runtime ?? Runtime.NODEJS_16_X,
       timeout: props.timeout ?? Duration.seconds(5),
       memorySize: props.memorySize ?? 1024,
       tracing: Tracing.ACTIVE,
