@@ -1,11 +1,11 @@
 import generateLambdaProxyResponse from './utils';
 
-const AWSXRay = require('aws-xray-sdk-core');
-const AWS = AWSXRay.captureAWS(require('aws-sdk'));
+import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 
-const eventBridge = new AWS.EventBridge({
+const AWSXRay = require('aws-xray-sdk-core');
+const eventBridge = AWSXRay.captureAWSv3Client(new EventBridgeClient({
   region: process.env.AWS_REGION,
-});
+}));
 
 export async function handleMessage(event: any) {
   console.log('Received event ', event);
@@ -23,9 +23,9 @@ export async function handleMessage(event: any) {
 
   console.log('Sending to EventBridge ', entry);
 
-  const result = await eventBridge.putEvents({
+  const result = await eventBridge.send(new PutEventsCommand({
     Entries: [entry],
-  }).promise();
+  }));
 
   console.log('Result ', result);
 

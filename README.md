@@ -48,7 +48,7 @@ Open `cdk/bin/websockets-blog.ts` and adjust the Regions to deploy the applicati
 
 ```
 // List of Region codes to deploy the application to
-const regionsToDeploy = ['us-west-1', 'eu-west-1', 'ap-northeast-1'];
+const regionsToDeploy = ['us-east-1', 'eu-west-1', 'ap-northeast-1'];
 ```
 
 #### 5. Deploy your application

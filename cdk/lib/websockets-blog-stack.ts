@@ -4,8 +4,8 @@ import {
 import { Construct } from 'constructs';
 
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
-import * as apigwv2 from '@aws-cdk/aws-apigatewayv2-alpha';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as events from 'aws-cdk-lib/aws-events';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
@@ -36,7 +36,7 @@ export class SimpleLambda extends Construct {
     this.fn = new NodejsFunction(this, id, {
       entry: `../src/lambda/${props.entryFilename}`,
       handler: props.handler ?? 'handler',
-      runtime: props.runtime ?? Runtime.NODEJS_16_X,
+      runtime: props.runtime ?? Runtime.NODEJS_20_X,
       timeout: props.timeout ?? Duration.seconds(5),
       memorySize: props.memorySize ?? 1024,
       tracing: Tracing.ACTIVE,
@@ -99,7 +99,7 @@ export class WebsocketsBlogStack extends Stack {
 
     eventBus.grantPutEventsTo(requestHandlerLambda.fn);
 
-    const webSocketApi = new apigwv2.WebSocketApi(this, 'WebsocketApi', {
+    const webSocketApi = new WebSocketApi(this, 'WebsocketApi', {
       apiName: 'WebSocketApi',
       description: 'A regional Websocket API for the multi-region chat application.',
       connectRouteOptions: {
@@ -113,7 +113,7 @@ export class WebsocketsBlogStack extends Stack {
       },
     });
 
-    const websocketStage = new apigwv2.WebSocketStage(this, 'WebsocketStage', {
+    const websocketStage = new WebSocketStage(this, 'WebsocketStage', {
       webSocketApi,
       stageName: 'chat',
       autoDeploy: true,
@@ -178,7 +178,7 @@ export class WebsocketsBlogStack extends Stack {
     eventBus.grantPutEventsTo(processLambda.fn);
     table.grantReadData(processLambda.fn);
 
-    new CfnOutput(this, 'bucketName', {
+    new CfnOutput(this, 'WebSocket API URL', {
       value: websocketStage.url,
       description: 'WebSocket API URL',
       exportName: `websocketAPIUrl-${this.region}`,

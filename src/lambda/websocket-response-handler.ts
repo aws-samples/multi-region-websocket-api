@@ -1,14 +1,14 @@
 import { EventBridgeEvent } from 'aws-lambda';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { ApiGatewayManagementApi } from '@aws-sdk/client-apigatewaymanagementapi';
 
 const AWSXRay = require('aws-xray-sdk-core');
-const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 
-const dynamoDbClient = new AWS.DynamoDB.DocumentClient({
-  apiVersion: '2012-08-10',
-  region: process.env.AWS_REGION,
-});
+const client = AWSXRay.captureAWSv3Client(new DynamoDBClient({}));
+const dynamoDbClient = DynamoDBDocumentClient.from(client);
 
-const gatewayClient = new AWS.ApiGatewayManagementApi({
+const gatewayClient = new ApiGatewayManagementApi({
   apiVersion: '2018-11-29',
   endpoint: process.env.API_GATEWAY_ENDPOINT,
 });
@@ -20,16 +20,16 @@ interface ResponseEventDetails {
 }
 
 async function getConnections(senderConnectionId: string, chatId: string): Promise<any> {
-  const { Items: connections } = await dynamoDbClient.query({
+  const { Items: connections } = await dynamoDbClient.send(new QueryCommand({
     TableName: process.env.TABLE_NAME!,
     KeyConditionExpression: 'chatId = :c',
     ExpressionAttributeValues: {
       ':c': chatId,
     },
     ProjectionExpression: 'connectionId',
-  }).promise();
+  }));
 
-  return connections
+  return connections!
     .map((c: any) => c.connectionId)
     .filter((connectionId: string) => connectionId !== senderConnectionId);
 }
@@ -42,7 +42,7 @@ export async function handler(event: EventBridgeEvent<'EventResponse', ResponseE
     .map((connectionId: string) => gatewayClient.postToConnection({
       ConnectionId: connectionId,
       Data: JSON.stringify({ data: event.detail.message }),
-    }).promise());
+    }));
   await Promise.allSettled(postToConnectionPromises!);
   return true;
 }
