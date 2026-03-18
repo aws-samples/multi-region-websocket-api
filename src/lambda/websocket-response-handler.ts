@@ -3,7 +3,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { ApiGatewayManagementApi } from '@aws-sdk/client-apigatewaymanagementapi';
 
-const AWSXRay = require('aws-xray-sdk-core');
+import AWSXRay from 'aws-xray-sdk-core';
 
 const client = AWSXRay.captureAWSv3Client(new DynamoDBClient({}));
 const dynamoDbClient = DynamoDBDocumentClient.from(client);

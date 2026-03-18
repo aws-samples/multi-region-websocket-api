@@ -2,7 +2,7 @@ import generateLambdaProxyResponse from './utils';
 
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 
-const AWSXRay = require('aws-xray-sdk-core');
+import AWSXRay from 'aws-xray-sdk-core';
 const eventBridge = AWSXRay.captureAWSv3Client(new EventBridgeClient({
   region: process.env.AWS_REGION,
 }));

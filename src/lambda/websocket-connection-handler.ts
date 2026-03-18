@@ -1,11 +1,10 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-// eslint-disable-next-line import/no-unresolved
 import { APIGatewayEvent } from 'aws-lambda';
 
 import generateLambdaProxyResponse from './utils';
 
-const AWSXRay = require('aws-xray-sdk-core');
+import AWSXRay from 'aws-xray-sdk-core';
 
 const client = AWSXRay.captureAWSv3Client(new DynamoDBClient({}));
 const dynamoDbClient = DynamoDBDocumentClient.from(client);

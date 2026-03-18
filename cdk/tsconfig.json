@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES2024",
     "module": "commonjs",
     "lib": [
-      "es2018"
+      "es2024"
     ],
     "declaration": true,
     "strict": true,
@@ -19,8 +19,9 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": [
-      "./node_modules/@types"
+    "skipLibCheck": true,
+    "types": [
+      "node"
     ]
   },
   "exclude": [

@@ -13,7 +13,7 @@ import {
   Effect, PolicyStatement, Role, ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { EventBus, LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
-import path = require('path');
+import * as path from 'path';
 
 export interface SimpleLambdaProps {
   memorySize?: number;
@@ -36,7 +36,7 @@ export class SimpleLambda extends Construct {
     this.fn = new NodejsFunction(this, id, {
       entry: `../src/lambda/${props.entryFilename}`,
       handler: props.handler ?? 'handler',
-      runtime: props.runtime ?? Runtime.NODEJS_20_X,
+      runtime: props.runtime ?? Runtime.NODEJS_24_X,
       timeout: props.timeout ?? Duration.seconds(5),
       memorySize: props.memorySize ?? 1024,
       tracing: Tracing.ACTIVE,

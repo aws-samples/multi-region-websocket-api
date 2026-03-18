@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES2024",
     "module": "commonjs",
-    "lib": ["es2020"],
+    "lib": ["es2024"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
