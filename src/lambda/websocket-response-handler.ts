@@ -36,11 +36,20 @@ async function getConnections(senderConnectionId: string, chatId: string): Promi
 
 export async function handler(event: EventBridgeEvent<'EventResponse', ResponseEventDetails>): Promise<any> {
   const connections = await getConnections(event.detail.senderConnectionId, event.detail.chatId);
+  console.log('Processing chat message', {
+    eventType: event['detail-type'],
+    connectionCount: connections.length,
+  });
+
   const postToConnectionPromises = connections
     .map((connectionId: string) => gatewayClient.postToConnection({
       ConnectionId: connectionId,
       Data: JSON.stringify({ data: event.detail.message }),
     }));
-  await Promise.allSettled(postToConnectionPromises!);
+  const results = await Promise.allSettled(postToConnectionPromises);
+  console.log('Delivered chat message', {
+    connectionCount: connections.length,
+    failedDeliveries: results.filter((result) => result.status === 'rejected').length,
+  });
   return true;
 }
