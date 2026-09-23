@@ -51,7 +51,28 @@ Open `cdk/bin/websockets-blog.ts` and adjust the Regions to deploy the applicati
 const regionsToDeploy = ['us-east-1', 'eu-west-1', 'ap-northeast-1'];
 ```
 
-#### 5. Deploy your application
+#### 5. Configure WebSocket access
+
+The WebSocket `$connect` route uses IAM authorization. Clients must sign the connection request with AWS Signature Version 4 and the calling IAM principal must have `execute-api:Invoke` permission for the deployed WebSocket API. Grant access only to the principals that should use the chat application; do not make the API public.
+
+For example, an identity policy can scope access to the API and stage:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "execute-api:Invoke",
+      "Resource": "arn:aws:execute-api:<region>:<account-id>:<api-id>/chat/*"
+    }
+  ]
+}
+```
+
+Use a SigV4-capable WebSocket client when connecting. The API URL and API ID are available from the CloudFormation stack outputs and deployment resources.
+
+#### 6. Deploy your application
 
 Navigate to the `cdk` folder and run the following commands. 
 
@@ -65,7 +86,7 @@ cdk bootstrap 123456789012/us-east-1 123456789012/eu-west-1
 cdk deploy --all
 ```
 
-#### 6. Test the application
+#### 7. Test the application
 
 Connect to the Websocket API Gateway endpoints in each Region with a Websocket client or command line tool. After connecting, send a message from one of the connected clients. Your message will be send to every other client in the same Region and all clients in other Regions.
 

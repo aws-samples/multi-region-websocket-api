@@ -8,8 +8,6 @@ const eventBridge = AWSXRay.captureAWSv3Client(new EventBridgeClient({
 }));
 
 export async function handleMessage(event: any) {
-  console.log('Received event ', event);
-
   const entry = {
     EventBusName: process.env.BUS_NAME,
     Source: 'ChatApplication',
@@ -21,13 +19,9 @@ export async function handleMessage(event: any) {
     }),
   };
 
-  console.log('Sending to EventBridge ', entry);
-
-  const result = await eventBridge.send(new PutEventsCommand({
+  await eventBridge.send(new PutEventsCommand({
     Entries: [entry],
   }));
-
-  console.log('Result ', result);
 
   return generateLambdaProxyResponse(200, 'Ok');
 }

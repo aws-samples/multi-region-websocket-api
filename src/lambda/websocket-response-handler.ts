@@ -35,9 +35,7 @@ async function getConnections(senderConnectionId: string, chatId: string): Promi
 }
 
 export async function handler(event: EventBridgeEvent<'EventResponse', ResponseEventDetails>): Promise<any> {
-  console.log('Triggered by ', event);
   const connections = await getConnections(event.detail.senderConnectionId, event.detail.chatId);
-  console.log('Found connections in this region ', connections);
   const postToConnectionPromises = connections
     .map((connectionId: string) => gatewayClient.postToConnection({
       ConnectionId: connectionId,

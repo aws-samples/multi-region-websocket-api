@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { WebSocketIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as events from 'aws-cdk-lib/aws-events';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
@@ -84,7 +85,11 @@ export class WebsocketsBlogStack extends Stack {
         TABLE_NAME: table.tableName,
       },
     });
-    table.grantFullAccess(connectionLambda.fn);
+    connectionLambda.fn.addToRolePolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['dynamodb:DeleteItem', 'dynamodb:PutItem'],
+      resources: [table.tableArn],
+    }));
 
     // Main (default route) handler
     const requestHandlerLambda = new SimpleLambda(this, 'RequestHandlerLambda', {
@@ -104,6 +109,7 @@ export class WebsocketsBlogStack extends Stack {
       description: 'A regional Websocket API for the multi-region chat application.',
       connectRouteOptions: {
         integration: new WebSocketLambdaIntegration('connectionIntegration', connectionLambda.fn),
+        authorizer: new WebSocketIamAuthorizer(),
       },
       disconnectRouteOptions: {
         integration: new WebSocketLambdaIntegration('disconnectIntegration', connectionLambda.fn),
@@ -175,8 +181,7 @@ export class WebsocketsBlogStack extends Stack {
       ],
     });
 
-    eventBus.grantPutEventsTo(processLambda.fn);
-    table.grantReadData(processLambda.fn);
+    table.grant(processLambda.fn, 'dynamodb:Query');
 
     new CfnOutput(this, 'WebSocket API URL', {
       value: websocketStage.url,
